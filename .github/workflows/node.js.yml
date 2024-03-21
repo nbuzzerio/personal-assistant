@@ -28,6 +28,7 @@ jobs:
         run: |
           echo "PORT=${{ secrets.PORT }}" >> .env 
           echo "AI_KEY=${{ secrets.AI_KEY }}" >> .env
+          echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" >> .env
 
       # Check if pm2 process with name 'personal-assistant' exists
       - name: Check if pm2 process exists
