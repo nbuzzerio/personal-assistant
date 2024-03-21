@@ -17,8 +17,9 @@
     "test-all": "npm run lint && ((npm run check-format && npm run check-lint && npm run check-types && node -e \"require('colors'); console.log('LINT SUCCESSFULLY COMPLETED.'.green)\") || (npm run format && node -e \"require('colors'); console.log('\\n\\n', 'WARNING: FILE CHANGES:'.red, 'Please add to staging.'); process.exit(1)\"))"
   },
   "dependencies": {
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.5",
     "express": "^4.18.2",
+    "openai": "^4.29.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
