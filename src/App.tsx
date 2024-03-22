@@ -59,6 +59,7 @@ function App() {
       <h1 className="text z-10 w-full p-3 text-xl font-extrabold uppercase text-red-950 underline md:w-auto md:py-10 md:text-center md:text-7xl 2xl:text-9xl">
         Personal Assistant
       </h1>
+
       <section className="flex h-full w-full max-w-5xl flex-grow flex-col justify-between">
         <div className="">
           {hasRecognitionSupport ? (
@@ -94,7 +95,7 @@ function App() {
         <div className="flex flex-col gap-2 px-5 pb-10 text-white">
           Choose Lang:
           <select
-            className="w-full bg-white/20"
+            className="w-full bg-black"
             onChange={(e) => changeLang(e.target.value)}
           >
             <option value="en-US">English</option>
@@ -102,13 +103,13 @@ function App() {
           </select>
           Choose Voice:
           <select
-            className="w-full bg-white/20"
-            value={selectedVoice.toString()}
-            onChange={(e) => setSelectedVoice(parseInt(e.target.value, 10))}
+            className="w-full bg-black"
+            value={selectedVoice}
+            onChange={(e) => setSelectedVoice(e.target.value)}
           >
             {voices &&
-              voices.map((voice, index) => (
-                <option key={voice.name} value={index}>
+              voices.map((voice) => (
+                <option key={voice.name} value={voice.name}>
                   {`${voice.name} (${voice.lang})`}
                 </option>
               ))}

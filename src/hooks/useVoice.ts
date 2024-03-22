@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 
 const useVoice = () => {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [selectedVoice, setSelectedVoice] = useState(0);
+  const [selectedVoice, setSelectedVoice] = useState<string | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     const handleVoicesChanged = () => {
-      setVoices(window.speechSynthesis.getVoices());
+      const loadedVoices = window.speechSynthesis.getVoices();
+      setVoices(loadedVoices);
+      setSelectedVoice(loadedVoices[0]?.name);
     };
 
     window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
@@ -24,7 +28,22 @@ const useVoice = () => {
     }
     const utterance = new SpeechSynthesisUtterance(AIResponse);
     utterance.lang = lang;
-    if (voices.length > 0) utterance.voice = voices[selectedVoice];
+    utterance.voice =
+      voices.find((voice) => voice.name === selectedVoice) || null;
+
+    if (
+      selectedVoice &&
+      voices.find((voice) => voice.name === selectedVoice)?.lang !== lang
+    ) {
+      const detectedVoice = voices.find((voice) => voice.lang === lang);
+
+      if (detectedVoice) {
+        utterance.voice = detectedVoice;
+        console.log("voice seleceted :", detectedVoice.name, selectedVoice);
+
+        setSelectedVoice(detectedVoice.name);
+      }
+    }
     window.speechSynthesis.speak(utterance);
   };
 
