@@ -8,9 +8,12 @@ const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3008";
 function App() {
   const theme = useTheme();
   const [AIResponse, setAIResponse] = useState("");
+  const [typeUser, setTypeUser] = useState("");
+  const [typeResponse, setTypeResponse] = useState("");
   const {
     text,
     lang,
+    inputText,
     changeLang,
     isListening,
     startListening,
@@ -52,6 +55,15 @@ function App() {
     handleSpeak(AIResponse, lang);
   }, [AIResponse]);
 
+  const handleTypeUser = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    inputText(typeUser);
+  };
+  const handleTypeResponse = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setAIResponse(typeResponse);
+  };
+
   return (
     <div
       className={`theme ${theme ? "bg-gray-700" : "bg-gray-800"} flex min-h-screen flex-col items-center`}
@@ -59,7 +71,6 @@ function App() {
       <h1 className="text z-10 w-full p-3 text-xl font-extrabold uppercase text-red-950 underline md:w-auto md:py-10 md:text-center md:text-7xl 2xl:text-9xl">
         Personal Assistant
       </h1>
-
       <section className="flex h-full w-full max-w-5xl flex-grow flex-col justify-between">
         <div className="">
           {hasRecognitionSupport ? (
@@ -93,6 +104,42 @@ function App() {
           </p>
         </div>
         <div className="flex flex-col gap-2 px-5 pb-10 text-white">
+          <form
+            onSubmit={handleTypeUser}
+            className="flex w-full flex-col gap-2"
+          >
+            Type Question:
+            <div className="flex w-full gap-5">
+              <input
+                type="text"
+                value={typeUser}
+                onChange={(e) => setTypeUser(e.target.value)}
+                className="grow bg-black"
+              />
+              <input
+                type="submit"
+                className="rounded-sm border bg-black px-5"
+              />
+            </div>
+          </form>
+          <form
+            onSubmit={handleTypeResponse}
+            className="flex w-full flex-col gap-2"
+          >
+            Type Response:
+            <div className="flex w-full gap-5">
+              <input
+                type="text"
+                value={typeResponse}
+                onChange={(e) => setTypeResponse(e.target.value)}
+                className="grow bg-black"
+              />
+              <input
+                type="submit"
+                className="rounded-sm border bg-black px-5"
+              />
+            </div>
+          </form>
           Choose Lang:
           <select
             className="w-full bg-black"
@@ -100,6 +147,7 @@ function App() {
           >
             <option value="en-US">English</option>
             <option value="ja-JP">Japanese</option>
+            <option value="it-IT">Italiano</option>
           </select>
           Choose Voice:
           <select

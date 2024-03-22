@@ -17,7 +17,6 @@ const useSpeechRecognition = () => {
     if (!recognition) return;
 
     recognition.onresult = (e: SpeechRecognitionEvent) => {
-      console.log("onResult: ", e);
       setText(e.results[0][0].transcript);
       setListening(false);
       recognition?.stop();
@@ -41,9 +40,14 @@ const useSpeechRecognition = () => {
     setLang(lang);
   };
 
+  const inputText = (text: string) => {
+    setText(text);
+  };
+
   return {
     text,
     lang,
+    inputText,
     changeLang,
     isListening,
     startListening,
