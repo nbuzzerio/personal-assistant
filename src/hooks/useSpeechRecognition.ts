@@ -10,6 +10,7 @@ if ("webkitSpeechRecognition" in window) {
 
 const useSpeechRecognition = () => {
   const [text, setText] = useState("");
+  const [lang, setLang] = useState("en-US");
   const [isListening, setListening] = useState(false);
 
   useEffect(() => {
@@ -34,8 +35,16 @@ const useSpeechRecognition = () => {
     recognition?.stop();
   };
 
+  const changeLang = (lang: string) => {
+    if (!recognition) return null;
+    recognition.lang = lang;
+    setLang(lang);
+  };
+
   return {
     text,
+    lang,
+    changeLang,
     isListening,
     startListening,
     stopListening,

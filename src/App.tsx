@@ -10,6 +10,8 @@ function App() {
   const [AIResponse, setAIResponse] = useState("");
   const {
     text,
+    lang,
+    changeLang,
     isListening,
     startListening,
     stopListening,
@@ -47,7 +49,7 @@ function App() {
   }, [text]);
 
   useEffect(() => {
-    handleSpeak(AIResponse);
+    handleSpeak(AIResponse, lang);
   }, [AIResponse]);
 
   return (
@@ -90,6 +92,14 @@ function App() {
           </p>
         </div>
         <div className="flex flex-col gap-2 px-5 pb-10 text-white">
+          Choose Lang:
+          <select
+            className="w-full bg-white/20"
+            onChange={(e) => changeLang(e.target.value)}
+          >
+            <option value="en-US">English</option>
+            <option value="ja-JP">Japanese</option>
+          </select>
           Choose Voice:
           <select
             className="w-full bg-white/20"

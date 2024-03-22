@@ -17,12 +17,13 @@ const useVoice = () => {
     };
   }, []);
 
-  const handleSpeak = (AIResponse: string) => {
+  const handleSpeak = (AIResponse: string, lang: string) => {
     if (!window.speechSynthesis) {
       alert("Your browser does not support speech synthesis.");
       return;
     }
     const utterance = new SpeechSynthesisUtterance(AIResponse);
+    utterance.lang = lang;
     if (voices.length > 0) utterance.voice = voices[selectedVoice];
     window.speechSynthesis.speak(utterance);
   };
