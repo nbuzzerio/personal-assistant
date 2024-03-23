@@ -3,6 +3,7 @@ import { useTheme } from "./components/ThemeContext/ThemeContext";
 import useSpeechRecognition from "./hooks/useSpeechRecognition";
 import useVoice from "./hooks/useVoice";
 import getTranslation from "./utils/translate";
+import * as wanakana from "wanakana";
 
 const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3008";
 
@@ -24,26 +25,22 @@ function App() {
 
   const [userTranslation, setUserTranslation] = useState("");
   const [AIResponseTranslation, setAIResponseTranslation] = useState("");
+  const [userRomanji, setUserRomanji] = useState("");
+  const [AIResponseRomanji, setAIResponseRomanji] = useState("");
 
   const { voices, handleSpeak, selectedVoice, setSelectedVoice } = useVoice();
 
   useEffect(() => {
-    if (lang !== "en-US") {
-      (async () => {
-        const translation = await getTranslation(text, lang);
-        setUserTranslation(translation);
-      })();
+    if (lang === "ja-JP") {
+      setUserRomanji(wanakana.toRomaji(text));
     }
-  }, [text]);
+  }, [userTranslation]);
 
   useEffect(() => {
-    if (lang !== "en-US") {
-      (async () => {
-        const translation = await getTranslation(AIResponse, lang);
-        setAIResponseTranslation(translation);
-      })();
+    if (lang === "ja-JP") {
+      setAIResponseRomanji(wanakana.toRomaji(AIResponse));
     }
-  }, [AIResponse]);
+  }, [AIResponseTranslation]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,6 +63,13 @@ function App() {
       }
     };
 
+    if (lang !== "en-US") {
+      (async () => {
+        const translation = await getTranslation(text, lang);
+        setUserTranslation(translation);
+      })();
+    }
+
     if (text) fetchData();
 
     return () => {
@@ -75,6 +79,12 @@ function App() {
 
   useEffect(() => {
     handleSpeak(AIResponse, lang);
+    if (lang !== "en-US") {
+      (async () => {
+        const translation = await getTranslation(AIResponse, lang);
+        setAIResponseTranslation(translation);
+      })();
+    }
   }, [AIResponse]);
 
   const handleTypeUser = (e: React.FormEvent<HTMLFormElement>) => {
@@ -118,6 +128,9 @@ function App() {
               </div>
               <div className="w-full px-5">
                 <p className="w-full text-white">User: {text}</p>
+                {userRomanji && (
+                  <p className="w-full text-white">Romanji: {userRomanji}</p>
+                )}
                 {userTranslation && (
                   <p className="w-full text-white">
                     Translation: {userTranslation}
@@ -126,6 +139,11 @@ function App() {
               </div>
               <div className="w-full px-5">
                 <p className="w-full text-white">Assistant: {AIResponse}</p>
+                {AIResponseRomanji && (
+                  <p className="w-full text-white">
+                    Translation: {AIResponseRomanji}
+                  </p>
+                )}
                 {AIResponseTranslation && (
                   <p className="w-full text-white">
                     Translation: {AIResponseTranslation}
