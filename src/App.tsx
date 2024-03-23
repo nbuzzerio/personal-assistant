@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTheme } from "./components/ThemeContext/ThemeContext";
 import useSpeechRecognition from "./hooks/useSpeechRecognition";
 import useVoice from "./hooks/useVoice";
+import getTranslation from "./utils/translate";
 
 const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3008";
 
@@ -21,7 +22,28 @@ function App() {
     hasRecognitionSupport,
   } = useSpeechRecognition();
 
+  const [userTranslation, setUserTranslation] = useState("");
+  const [AIResponseTranslation, setAIResponseTranslation] = useState("");
+
   const { voices, handleSpeak, selectedVoice, setSelectedVoice } = useVoice();
+
+  useEffect(() => {
+    if (lang !== "en-US") {
+      (async () => {
+        const translation = await getTranslation(text, lang);
+        setUserTranslation(translation);
+      })();
+    }
+  }, [text]);
+
+  useEffect(() => {
+    if (lang !== "en-US") {
+      (async () => {
+        const translation = await getTranslation(AIResponse, lang);
+        setAIResponseTranslation(translation);
+      })();
+    }
+  }, [AIResponse]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -58,10 +80,12 @@ function App() {
   const handleTypeUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     inputText(typeUser);
+    setTypeUser("");
   };
   const handleTypeResponse = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setAIResponse(typeResponse);
+    setTypeResponse("");
   };
 
   return (
@@ -72,9 +96,9 @@ function App() {
         Personal Assistant
       </h1>
       <section className="flex h-full w-full max-w-5xl flex-grow flex-col justify-between">
-        <div className="">
+        <div className="py-5">
           {hasRecognitionSupport ? (
-            <div className="mx-auto flex flex-col items-center justify-center">
+            <div className="mx-auto flex flex-col items-center justify-center gap-5">
               <div className="flex w-full flex-col items-center justify-center gap-2 md:w-auto md:flex-row md:gap-10">
                 <button
                   className="w-11/12 rounded-lg border px-10 py-10 text-black transition-all duration-300 hover:border-white hover:bg-black/50 hover:text-white md:w-auto md:py-2"
@@ -92,16 +116,28 @@ function App() {
                   Stop Listening
                 </button>
               </div>
-              <p className="w-full px-5 py-10 text-white">User: {text}</p>
+              <div className="w-full px-5">
+                <p className="w-full text-white">User: {text}</p>
+                {userTranslation && (
+                  <p className="w-full text-white">
+                    Translation: {userTranslation}
+                  </p>
+                )}
+              </div>
+              <div className="w-full px-5">
+                <p className="w-full text-white">Assistant: {AIResponse}</p>
+                {AIResponseTranslation && (
+                  <p className="w-full text-white">
+                    Translation: {AIResponseTranslation}
+                  </p>
+                )}
+              </div>
             </div>
           ) : (
             <h2 className="text-5xl font-bold text-red-600">
               Speech not supported in browser
             </h2>
           )}
-          <p className="w-full px-5 py-10 text-white">
-            Assistant: {AIResponse}
-          </p>
         </div>
         <div className="flex flex-col gap-2 px-5 pb-10 text-white">
           <form
@@ -109,7 +145,7 @@ function App() {
             className="flex w-full flex-col gap-2"
           >
             Type Question:
-            <div className="flex w-full gap-5">
+            <div className="flex w-full flex-col gap-5 sm:flex-row">
               <input
                 type="text"
                 value={typeUser}
@@ -127,7 +163,7 @@ function App() {
             className="flex w-full flex-col gap-2"
           >
             Type Response:
-            <div className="flex w-full gap-5">
+            <div className="flex w-full flex-col gap-5 sm:flex-row">
               <input
                 type="text"
                 value={typeResponse}
