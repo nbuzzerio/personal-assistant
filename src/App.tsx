@@ -152,10 +152,10 @@ function App() {
                 )}
               </div>
               <div className="w-full px-5">
-                <p className="flex w-full items-center justify-start gap-2 text-white">
+                <p className="flex w-full items-start justify-start gap-2 text-white">
                   Assistant
                   <button
-                    className=""
+                    className="translate-y-1/3"
                     onClick={() =>
                       isSpeaking ? stopSpeak() : handleSpeak(AIResponse, lang)
                     }
