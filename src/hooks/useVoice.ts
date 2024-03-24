@@ -5,6 +5,7 @@ const useVoice = () => {
   const [selectedVoice, setSelectedVoice] = useState<string | undefined>(
     undefined,
   );
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   useEffect(() => {
     const handleVoicesChanged = () => {
@@ -14,7 +15,7 @@ const useVoice = () => {
     };
 
     window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
-    handleVoicesChanged(); // Initial call in case voices are already loaded
+    handleVoicesChanged();
 
     return () => {
       window.speechSynthesis.onvoiceschanged = null;
@@ -44,11 +45,22 @@ const useVoice = () => {
         setSelectedVoice(detectedVoice.name);
       }
     }
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+
     window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeak = () => {
+    window.speechSynthesis.cancel(); // This stops the speech synthesis
+    setIsSpeaking(false); // Update the isSpeaking state accordingly
   };
 
   return {
     voices,
+    stopSpeak,
+    isSpeaking,
     handleSpeak,
     selectedVoice,
     setSelectedVoice,

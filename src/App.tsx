@@ -5,6 +5,9 @@ import useVoice from "./hooks/useVoice";
 import getTranslation from "./utils/translate";
 import * as wanakana from "wanakana";
 
+import { PiSpeakerHighFill } from "react-icons/pi";
+import { PiSpeakerNoneFill } from "react-icons/pi";
+
 const baseURL = import.meta.env.VITE_BASE_URL || "http://localhost:3008";
 
 function App() {
@@ -28,7 +31,14 @@ function App() {
   const [userRomanji, setUserRomanji] = useState("");
   const [AIResponseRomanji, setAIResponseRomanji] = useState("");
 
-  const { voices, handleSpeak, selectedVoice, setSelectedVoice } = useVoice();
+  const {
+    voices,
+    stopSpeak,
+    isSpeaking,
+    handleSpeak,
+    selectedVoice,
+    setSelectedVoice,
+  } = useVoice();
 
   useEffect(() => {
     if (lang === "ja-JP") {
@@ -69,6 +79,7 @@ function App() {
         setUserTranslation(translation);
       })();
     }
+    setUserRomanji("");
 
     if (text) fetchData();
 
@@ -79,6 +90,7 @@ function App() {
 
   useEffect(() => {
     handleSpeak(AIResponse, lang);
+    setAIResponseRomanji("");
     if (lang !== "en-US") {
       (async () => {
         const translation = await getTranslation(AIResponse, lang);
@@ -100,9 +112,9 @@ function App() {
 
   return (
     <div
-      className={`theme ${theme ? "bg-gray-700" : "bg-gray-800"} flex min-h-screen flex-col items-center`}
+      className={`theme ${theme ? "bg-black/80" : "bg-gray-800"} flex min-h-screen flex-col items-center`}
     >
-      <h1 className="text z-10 w-full p-3 text-xl font-extrabold uppercase text-red-950 underline md:w-auto md:py-10 md:text-center md:text-7xl 2xl:text-9xl">
+      <h1 className="text z-10 w-full p-3 text-xl font-extrabold uppercase text-red-700/70 underline md:w-auto md:py-10 md:text-center md:text-7xl 2xl:text-9xl">
         Personal Assistant
       </h1>
       <section className="flex h-full w-full max-w-5xl flex-grow flex-col justify-between">
@@ -111,7 +123,7 @@ function App() {
             <div className="mx-auto flex flex-col items-center justify-center gap-5">
               <div className="flex w-full flex-col items-center justify-center gap-2 md:w-auto md:flex-row md:gap-10">
                 <button
-                  className="w-11/12 rounded-lg border px-10 py-10 text-black transition-all duration-300 hover:border-white hover:bg-black/50 hover:text-white md:w-auto md:py-2"
+                  className="w-11/12 rounded-lg border px-10 py-10 text-white/80 transition-all duration-300 hover:border-white hover:bg-black/50 hover:text-white active:text-red-700 md:w-auto md:py-2"
                   onClick={startListening}
                 >
                   Start Listening
@@ -120,7 +132,7 @@ function App() {
                   className={`absolute right-1 top-1 h-10 w-10 rounded-full border md:relative ${isListening ? "bg-red-700" : "bg-black/80"}`}
                 ></div>
                 <button
-                  className="w-11/12 rounded-lg border px-10 py-10 text-black transition-all duration-300 hover:border-white hover:bg-black/50 hover:text-white md:w-auto md:py-2"
+                  className="w-11/12 rounded-lg border px-10 py-10 text-white/80 transition-all duration-300 hover:border-white hover:bg-black/50 hover:text-white active:text-red-700 md:w-auto md:py-2"
                   onClick={stopListening}
                 >
                   Stop Listening
@@ -129,23 +141,40 @@ function App() {
               <div className="w-full px-5">
                 <p className="w-full text-white">User: {text}</p>
                 {userRomanji && (
-                  <p className="w-full text-white">Romanji: {userRomanji}</p>
+                  <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-white hover:whitespace-normal">
+                    Romanji: {userRomanji}
+                  </p>
                 )}
                 {userTranslation && (
-                  <p className="w-full text-white">
+                  <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-white hover:whitespace-normal">
                     Translation: {userTranslation}
                   </p>
                 )}
               </div>
               <div className="w-full px-5">
-                <p className="w-full text-white">Assistant: {AIResponse}</p>
+                <p className="flex w-full items-center justify-start gap-2 text-white">
+                  Assistant
+                  <button
+                    className=""
+                    onClick={() =>
+                      isSpeaking ? stopSpeak() : handleSpeak(AIResponse, lang)
+                    }
+                  >
+                    {isSpeaking ? (
+                      <PiSpeakerHighFill className="fill-red-700" />
+                    ) : (
+                      <PiSpeakerNoneFill className="fill-black" />
+                    )}
+                  </button>
+                  : {AIResponse}
+                </p>
                 {AIResponseRomanji && (
-                  <p className="w-full text-white">
-                    Translation: {AIResponseRomanji}
+                  <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-white hover:whitespace-normal">
+                    Romanji: {AIResponseRomanji}
                   </p>
                 )}
                 {AIResponseTranslation && (
-                  <p className="w-full text-white">
+                  <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-white hover:whitespace-normal">
                     Translation: {AIResponseTranslation}
                   </p>
                 )}
@@ -168,11 +197,11 @@ function App() {
                 type="text"
                 value={typeUser}
                 onChange={(e) => setTypeUser(e.target.value)}
-                className="grow bg-black"
+                className="grow bg-black/40"
               />
               <input
                 type="submit"
-                className="rounded-sm border bg-black px-5"
+                className="rounded-sm border bg-black/40 px-5"
               />
             </div>
           </form>
@@ -186,17 +215,17 @@ function App() {
                 type="text"
                 value={typeResponse}
                 onChange={(e) => setTypeResponse(e.target.value)}
-                className="grow bg-black"
+                className="grow bg-black/40"
               />
               <input
                 type="submit"
-                className="rounded-sm border bg-black px-5"
+                className="rounded-sm border bg-black/40 px-5"
               />
             </div>
           </form>
           Choose Lang:
           <select
-            className="w-full bg-black"
+            className="w-full bg-black/40"
             onChange={(e) => changeLang(e.target.value)}
           >
             <option value="en-US">English</option>
@@ -205,7 +234,7 @@ function App() {
           </select>
           Choose Voice:
           <select
-            className="w-full bg-black"
+            className="w-full bg-black/40"
             value={selectedVoice}
             onChange={(e) => setSelectedVoice(e.target.value)}
           >
